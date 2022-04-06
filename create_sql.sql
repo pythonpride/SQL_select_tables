@@ -1,4 +1,4 @@
-  drop table Genre, Performers, Albums, Genre_Performers, Performers_Albums, Tracks, Compilation, Compilation_Tracks;
+--   drop table Genre, Performers, Albums, Genre_Performers, Performers_Albums, Tracks, Compilation, Compilation_Tracks;
 
 create table if not exists Genre(
     Id serial primary key, 

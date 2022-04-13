@@ -2,7 +2,7 @@ import sqlalchemy
 from pprint import pprint 
 
 
-engine = sqlalchemy.create_engine('postgresql://........')
+engine = sqlalchemy.create_engine('postgresql://')
 connection = engine.connect()  
 
 genre_performers = connection.execute(f"""
@@ -34,12 +34,13 @@ for i in avg_duration:
 print()
 
 avg_duration = connection.execute(f"""
-SELECT p.nickname FROM performers p
+SELECT DISTINCT p.nickname FROM performers p
 WHERE p.nickname NOT IN (
-SELECT p.nickname FROM performers p
-JOIN performers_albums pa ON p.id = pa.performers_id
-JOIN albums a ON a.id = pa.albums_id
-WHERE a.release = 2020);
+SELECT DISTINCT p.nickname FROM performers p
+LEFT JOIN performers_albums pa ON p.id = pa.performers_id
+LEFT JOIN albums a ON a.id = pa.albums_id
+WHERE a.release = 2020)
+ORDER BY p.nickname;
  """).fetchall()
 print(f" Исполнители, которые не выпустили альбомы в 2020 году: ")
 for i in avg_duration:
@@ -54,8 +55,7 @@ JOIN tracks t ON ct.tracks_id = t.id
 JOIN albums a ON t.albums_id = a.id
 JOIN performers_albums pa ON a.id = pa.albums_id
 JOIN performers p ON p.id = pa.performers_id
-WHERE p.nickname = '{performer}'
-GROUP BY c.name;
+WHERE p.nickname = '{performer}';
  """).fetchall()
 print(f"Названия сборников, в которых присутствует исполнитель '{performer}':")
 for i in compilat_perform:
@@ -91,8 +91,7 @@ SELECT p.nickname FROM performers p
 JOIN performers_albums pa ON p.id = pa.performers_id
 JOIN albums a ON a.id = pa.albums_id
 JOIN tracks t ON a.id = t.albums_id
-WHERE duration = (SELECT MIN(duration) FROM Tracks)
-GROUP BY p.nickname;
+WHERE duration = (SELECT MIN(duration) FROM Tracks);
 """).fetchall()
 print(f'Исполнитель(и), написавший(е) самый короткий по продолжительности трек: ')
 for i in perf_short_track:
